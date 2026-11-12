@@ -5,7 +5,7 @@ require_once __DIR__ . '/gate_config.php';
 require_once __DIR__ . '/gate_codes.php';
 require_once __DIR__ . '/eip712_gate.php';
 try {
-    if (!is_dir(GATE_NONCE_DIR)) mkdir(GATE_NONCE_DIR, 0700, true);
+    gate_private_dir(GATE_NONCE_DIR);
     if (!gate_rate_ok(10)) throw new InvalidArgumentException('Too many attempts. Wait a minute and try again.');
     $in = json_decode((string)file_get_contents('php://input'), true) ?: [];
     $code = strtoupper(preg_replace('/\s+/', '', (string)($in['code'] ?? '')));

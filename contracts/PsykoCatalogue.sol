@@ -1,0 +1,422 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+/// @title Psykovsky & Friends catalogue
+/// @notice Every product, its collaborators and their shares, written once at deployment.
+///         Shares are parts per million of the payout, i.e. of each sale after the buyer's
+///         cashback. They copy the shares in each album's original pool contract (named on
+///         each entry); whatever a pool did not assign goes to the Psykovsky deployer wallet.
+///         Prices are US cents: $1 per song.
+abstract contract PsykoCatalogue {
+    uint32 public constant SHARE_DENOM = 1_000_000;
+
+    function _split(uint256 productId, address payee, uint32 share) internal virtual;
+    function _product(uint256 productId, uint256 usdCents) internal virtual;
+
+    function _seedCatalogue() internal {
+        // 1 · Debut (2005) · 8 songs · from earlyDiscography 0x240f8D32A2374f40C41c144fAA8A2542bc30f3ed
+        _split(1, 0x26D310B977c9b8A81f59960A6c763C0f2105E4d3, 30000);
+        _split(1, 0x6e82cAB53edDE8d0fc97c7869bfce9dEdCF450bB, 10000);
+        _split(1, 0x3068a6800FAd3392b56AA6Af766838A9b0a2f9fF, 10000);
+        _split(1, 0x20D586e00D824d226DDa9213d0d9977153C20694, 10000);
+        _split(1, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 260000);
+        _split(1, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 680000);
+        _product(1, 800);
+
+        // 2 · Da Budet (2009) · 9 songs · from earlyDiscography 0x240f8D32A2374f40C41c144fAA8A2542bc30f3ed
+        _split(2, 0x87B639d88F0B9c6829ec0C3518150Bf502D7AFB2, 20000);
+        _split(2, 0x3FFE641cD1Ac213C8B9C8e2cdC0901AaE111C952, 20000);
+        _split(2, 0x705854de3844Da8116352B9d0b88384C8d3c0190, 20000);
+        _split(2, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 300000);
+        _split(2, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 640000);
+        _product(2, 900);
+
+        // 3 · Tanetsveta (2010) · 14 songs · from earlyDiscography 0x240f8D32A2374f40C41c144fAA8A2542bc30f3ed
+        _split(3, 0x4760FDb4aa653F3d9765ad23ED6dB49bec77d99F, 50000);
+        _split(3, 0x26D310B977c9b8A81f59960A6c763C0f2105E4d3, 50000);
+        _split(3, 0x276d45db7D0b890eaA6338921a32AD59F9A46d67, 40000);
+        _split(3, 0xB6072d73dA10A463BC90Dd676082b7688A6954D0, 20000);
+        _split(3, 0x1FC79FCed0Be067Aa7a97096228185AE86Ce0f43, 20000);
+        _split(3, 0x1bda83ac780c864e649041d4E8DA306A43B9EC3a, 20000);
+        _split(3, 0x038330CcBD17Bc488Aa0Ff7Aa9816848DBF11427, 20000);
+        _split(3, 0x703c0fe45B7d78CA0E306cCcE262601442948324, 10000);
+        _split(3, 0xB6058082Ed85C75E21b10E99a0529570f32b9e06, 10000);
+        _split(3, 0xeebC84f8F53DFf588a0A2d6Ed142975327f3334e, 20000);
+        _split(3, 0xf715e83bdDD57aB875CB2e9f63Efd017186B6389, 20000);
+        _split(3, 0x71525C8928aAc679C2C61b34Be22d21B54C306dC, 30000);
+        _split(3, 0x31066f1c22be2f502d9254348a7232163bF1a8F0, 10000);
+        _split(3, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 520000);
+        _split(3, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 160000);
+        _product(3, 1400);
+
+        // 4 · Na Ve Ka (2011) · 7 songs · from earlyDiscography 0x240f8D32A2374f40C41c144fAA8A2542bc30f3ed
+        _split(4, 0xb34165ebd92e4D8ab5903131755bBe148510938E, 30000);
+        _split(4, 0x705854de3844Da8116352B9d0b88384C8d3c0190, 30000);
+        _split(4, 0x703c0fe45B7d78CA0E306cCcE262601442948324, 10000);
+        _split(4, 0xB6058082Ed85C75E21b10E99a0529570f32b9e06, 30000);
+        _split(4, 0x8d7c222f7d80FacC28Cc00d2F307B0FAa227645C, 10000);
+        _split(4, 0xf715e83bdDD57aB875CB2e9f63Efd017186B6389, 30000);
+        _split(4, 0x345170bB94B2f3cFa4885182846f1d6F9E9146C3, 10000);
+        _split(4, 0xbBD3fdb6a6F5eA15165AdfA0e1D6D44cB4b1f1ad, 10000);
+        _split(4, 0x21A7c2c9d7c95137678907d9df55bFEf70C7e794, 10000);
+        _split(4, 0xc31d63f692862c128427321c8041D0e2720E213d, 30000);
+        _split(4, 0x7Cb88a7810e7995dd433b31809D761e65cEc3D1D, 10000);
+        _split(4, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 220000);
+        _split(4, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 570000);
+        _product(4, 700);
+
+        // 5 · Oblaka (2012) · 14 songs · from brazObleauv 0x9Dd7F53A1758e32F578ff943a36ACadBF510352C
+        _split(5, 0x2DA8C75534e4fA8Ce10f508a27426A28d03C5395, 10000);
+        _split(5, 0xb228042CddfacBE922b975a4222A836DDC40C31A, 10000);
+        _split(5, 0xfc119e0C4dFAbc277c04c5Ab677F19412e644840, 30000);
+        _split(5, 0x1ede016Ffd6e97722469a92f8c5F4787e03b4130, 20000);
+        _split(5, 0xEb9ce99886fc8A8b35b15d7D8A3362C622761fAb, 50000);
+        _split(5, 0xbF12B093b99625eE8fFE1830fC704C171e7beFE6, 50000);
+        _split(5, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 50000);
+        _split(5, 0x941503EfcAa28EFe071C84D72ff30cA018d23423, 20000);
+        _split(5, 0x9587DEc13357AB78e0D4a4b8D6f73b1e865C32C0, 30000);
+        _split(5, 0x038330CcBD17Bc488Aa0Ff7Aa9816848DBF11427, 20000);
+        _split(5, 0x73DE3633efa19B9e202C2d5C292b499284b1f477, 50000);
+        _split(5, 0xe602AeC42cB560f2B62E8C67Bc05146948d0C1f8, 20000);
+        _split(5, 0x71525C8928aAc679C2C61b34Be22d21B54C306dC, 20000);
+        _split(5, 0x472FceAaD8998d04fd33C47B57AaAccdB3048FEa, 30000);
+        _split(5, 0xbDFED1C92638A51F753082b1D1AE5Ebd0A3c9354, 30000);
+        _split(5, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 400000);
+        _split(5, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 160000);
+        _product(5, 1400);
+
+        // 6 · zovutssoboyu nasstoboyu (2012) · 8 songs · from brazObleauv 0x9Dd7F53A1758e32F578ff943a36ACadBF510352C
+        _split(6, 0x669060F3C399614bf88b448AC300a5C2D6177346, 10000);
+        _split(6, 0xbF12B093b99625eE8fFE1830fC704C171e7beFE6, 20000);
+        _split(6, 0x80F20842692D15F274d06604C877190C6fa749af, 20000);
+        _split(6, 0x73DE3633efa19B9e202C2d5C292b499284b1f477, 20000);
+        _split(6, 0xec49E887b525a173424a975A2Ce708835430B3C1, 40000);
+        _split(6, 0xEB68B1a282089e1CD5aE07249644d4334c740183, 20000);
+        _split(6, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 220000);
+        _split(6, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 650000);
+        _product(6, 800);
+
+        // 7 · lubeauvь (2023) · 11 songs · from brazObleauv 0x9Dd7F53A1758e32F578ff943a36ACadBF510352C
+        _split(7, 0xEE10Ece6148B916b3e2CEF240aa242Dc63677F90, 20000);
+        _split(7, 0xcF8448D386b12a03b9585D58e6A59b3Dc01d3FE5, 20000);
+        _split(7, 0xcc8C185FECEc2C1ec95f21bB698d6883aA22B1f5, 20000);
+        _split(7, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 20000);
+        _split(7, 0x1A197e218010DF52d41cd8329aAcAeBdb0F3a29e, 20000);
+        _split(7, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 40000);
+        _split(7, 0x82Bc087207c4AB731099BC886093591d629D0e80, 20000);
+        _split(7, 0xA922bBBCA6aAAd5f4E1d4C590C248972c90E1bD4, 10000);
+        _split(7, 0xbE88732D4f5F26646Fce1D62004c0d3c8CA03E7D, 10000);
+        _split(7, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 300000);
+        _split(7, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 520000);
+        _product(7, 1100);
+
+        // 8 · Conical Brazers - Magic Power · 1 song · from brazObleauv 0x9Dd7F53A1758e32F578ff943a36ACadBF510352C
+        _split(8, 0x10D0E0AD1767DE6D858FEF591B02EF74BE2a2160, 10000);
+        _split(8, 0x4a655dcf3D93144422d8dDFdC028AB48e2017a42, 10000);
+        _split(8, 0xe06DF71a6F9F47c7eA197d6A5bae77f0ebB3CF51, 230000);
+        _split(8, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 290000);
+        _split(8, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 460000);
+        _product(8, 100);
+
+        // 9 · KSOLNTSU · 15 songs · from fivTeans 0xB9aC1F6d9152867109B71e67E13E353c11FF1Db5
+        _split(9, 0x705854de3844Da8116352B9d0b88384C8d3c0190, 50000);
+        _split(9, 0xe7fBBc14A5d77BABeFE2fDBe9336e39351bFC079, 30000);
+        _split(9, 0x1FC79FCed0Be067Aa7a97096228185AE86Ce0f43, 50000);
+        _split(9, 0x2839DDA903f5425Df3a6f00084ae0748Ac530cc8, 30000);
+        _split(9, 0xa790A8d199ceEEd91f61eC276c33866423f69De7, 40000);
+        _split(9, 0x5784BA1d804aeffBfD0a48a1f849349fA53a73Dc, 20000);
+        _split(9, 0xe602AeC42cB560f2B62E8C67Bc05146948d0C1f8, 50000);
+        _split(9, 0x038330CcBD17Bc488Aa0Ff7Aa9816848DBF11427, 20000);
+        _split(9, 0xaE4598f54918cfaa13111bfd128cA0359c37098c, 20000);
+        _split(9, 0x842C7777bB088694459512F06FdE820F16bF1760, 30000);
+        _split(9, 0x9587DEc13357AB78e0D4a4b8D6f73b1e865C32C0, 20000);
+        _split(9, 0x80F20842692D15F274d06604C877190C6fa749af, 20000);
+        _split(9, 0x57656414dDB6EFBfdC763A1FC2aC9A21d3D33de7, 30000);
+        _split(9, 0x3FfB2a3e6daB83E6d387DF95C0AF6E94700eB513, 10000);
+        _split(9, 0xb69320aC7b952F9f559378aD61c8fcCe55303b95, 10000);
+        _split(9, 0x0F471620a5A34FA76e25EA552611dB86ec8115BD, 10000);
+        _split(9, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 490000);
+        _split(9, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 70000);
+        _product(9, 1500);
+
+        // 10 · Poslantsu Rastvorim Vogne Zemli (2017) · 12 songs · from fivTeans 0xB9aC1F6d9152867109B71e67E13E353c11FF1Db5
+        _split(10, 0x2B374f15D25779fD6d3A84C78F6ab5b3a8522e7b, 20000);
+        _split(10, 0x9b0bE3Dd2897936298C2d8465299e63eBdBDdFb7, 20000);
+        _split(10, 0x524685E2D5bacA59c6E771f7c3D2E1333506E13a, 20000);
+        _split(10, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 20000);
+        _split(10, 0x40DA5eB917D40C89737005c4C9A2B5f39025a63a, 20000);
+        _split(10, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 20000);
+        _split(10, 0x2Df2Ed98f418e5B241518D878733e2660272A6B4, 10000);
+        _split(10, 0x2839DDA903f5425Df3a6f00084ae0748Ac530cc8, 10000);
+        _split(10, 0x705854de3844Da8116352B9d0b88384C8d3c0190, 40000);
+        _split(10, 0x336292bC4c652ebf222C7434B6572680fd348FB9, 20000);
+        _split(10, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 280000);
+        _split(10, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 520000);
+        _product(10, 1200);
+
+        // 11 · Prostra Potustoronnego Zertsala · 13 songs · from fivTeans 0xB9aC1F6d9152867109B71e67E13E353c11FF1Db5
+        _split(11, 0xbD017685eE9C6540e9FC996514aB2393f0e83D95, 30000);
+        _split(11, 0x2B374f15D25779fD6d3A84C78F6ab5b3a8522e7b, 30000);
+        _split(11, 0x950877dB220C810CD990867155AD363643D7ccD3, 20000);
+        _split(11, 0x09d5D1553Ee728390530fECa22B32FCbD7592b9e, 20000);
+        _split(11, 0x4d2de3b625272249574C38Fdcc3a2E63a4cc9250, 10000);
+        _split(11, 0x941503EfcAa28EFe071C84D72ff30cA018d23423, 20000);
+        _split(11, 0x54E9bd58852887A89281186D7016584D9E5667FE, 10000);
+        _split(11, 0x42D2c20Fff68065B1e2F208DA675c9418A070199, 20000);
+        _split(11, 0xa45F8B9Fd7871e14Ab56ed27979A79ac425E75e2, 30000);
+        _split(11, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 410000);
+        _split(11, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 400000);
+        _product(11, 1300);
+
+        // 12 · slovnovosne vesnoyuosen · 12 songs · from fivTeans 0xB9aC1F6d9152867109B71e67E13E353c11FF1Db5
+        _split(12, 0x80F20842692D15F274d06604C877190C6fa749af, 30000);
+        _split(12, 0x52390B9959a6217137D43535D4406D4D1050bA83, 30000);
+        _split(12, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 20000);
+        _split(12, 0xbD017685eE9C6540e9FC996514aB2393f0e83D95, 10000);
+        _split(12, 0x5A0B0669Ee210111211544D7b226701FBF1ab0F1, 10000);
+        _split(12, 0x4c845764e23Ee6bD0F52f867840d8A62edE6c9df, 10000);
+        _split(12, 0x705854de3844Da8116352B9d0b88384C8d3c0190, 30000);
+        _split(12, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 580000);
+        _split(12, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 280000);
+        _product(12, 1200);
+
+        // 13 · Sud Boyne · 12 songs · from Hyperswarm 0x42756b72Ac241285aEe1B1eDC9693Ef477534F01
+        _split(13, 0x6033c60aAE178Fe2231CCb909bdD79fcdC1001F2, 41666);
+        _split(13, 0x2B374f15D25779fD6d3A84C78F6ab5b3a8522e7b, 41666);
+        _split(13, 0x26D310B977c9b8A81f59960A6c763C0f2105E4d3, 41666);
+        _split(13, 0xCb1BD25f900e1F0F02FC7c5e284cf8077392525A, 41666);
+        _split(13, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 41666);
+        _split(13, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 791670);
+        _product(13, 1200);
+
+        // 14 · izmenimenya · 12 songs · from izmenimenya 0x551a4be3BDadDa499E73E50DD515C4b3A84E7b4B
+        _split(14, 0xCb1BD25f900e1F0F02FC7c5e284cf8077392525A, 38461);
+        _split(14, 0x6033c60aAE178Fe2231CCb909bdD79fcdC1001F2, 38461);
+        _split(14, 0x669AdCfDB35AdFA736a7e7b183D9bEf7B66F0B32, 38461);
+        _split(14, 0x1FD0e36e256b26Da1C05168D06616122041e0ea1, 38461);
+        _split(14, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 38461);
+        _split(14, 0xbF12B093b99625eE8fFE1830fC704C171e7beFE6, 38461);
+        _split(14, 0xa45F8B9Fd7871e14Ab56ed27979A79ac425E75e2, 38461);
+        _split(14, 0x53D2684Dd950d326f523F4f4F66C9dd2B2Dd0A8F, 38461);
+        _split(14, 0xA6611A62B6A789a64eFa52fc4AAe73c06F6a6685, 76923);
+        _split(14, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 615389);
+        _product(14, 1200);
+
+        // 15 · Zvyozdam i Nachalu · 17 songs · from TheGreatAttractor 0xe69fc5cB5369437AEB32e6b00aAa070C497795A4
+        _split(15, 0xbD017685eE9C6540e9FC996514aB2393f0e83D95, 33333);
+        _split(15, 0xe602AeC42cB560f2B62E8C67Bc05146948d0C1f8, 33333);
+        _split(15, 0xfBcEc6b5d4b8fed4dAe63d626069680Bd8bC2c39, 33333);
+        _split(15, 0xE9Fd0CaA6d4CA7c298a11ae725e01F764b0099fa, 33333);
+        _split(15, 0x7Cb88a7810e7995dd433b31809D761e65cEc3D1D, 33333);
+        _split(15, 0xa3C0dC9Bb88a7D0F878F02a698233Ba7Ea129382, 33333);
+        _split(15, 0xCd26cD29a320fF4F9a0B97a772F0fc634f8eb8ba, 33333);
+        _split(15, 0x5ca65aa8381bc33b1CE4C39cA7AAAd63f8FCcd10, 33333);
+        _split(15, 0x842C7777bB088694459512F06FdE820F16bF1760, 33333);
+        _split(15, 0xe06DF71a6F9F47c7eA197d6A5bae77f0ebB3CF51, 33333);
+        _split(15, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 666670);
+        _product(15, 1700);
+
+        // 16 · Peace For The Wicked · 10 songs · from PeaceForTheWicked 0xC45Acf764f7A93593644F7ee1Ac308799a334649
+        _split(16, 0xe8e553abF5Ba3da4791831BD788D707124297267, 166666);
+        _split(16, 0x8CDc26A57081bD06D0320463E2065661DE612f2d, 27777);
+        _split(16, 0x3068a6800FAd3392b56AA6Af766838A9b0a2f9fF, 27777);
+        _split(16, 0x26D310B977c9b8A81f59960A6c763C0f2105E4d3, 291666);
+        _split(16, 0x32365C8C89C34f5694b85510CdA8fC07eF2dED8e, 27777);
+        _split(16, 0xb34165ebd92e4D8ab5903131755bBe148510938E, 41666);
+        _split(16, 0x20D586e00D824d226DDa9213d0d9977153C20694, 27777);
+        _split(16, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 305555);
+        _split(16, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 83339);
+        _product(16, 1000);
+
+        // 17 · ZAGADALA VNOV · 12 songs · from zagadalaVnov 0x822FCA1f5c9ddf87f355Ed212AD6DeD63223C7D6
+        _split(17, 0xa45F8B9Fd7871e14Ab56ed27979A79ac425E75e2, 30000);
+        _split(17, 0x87B639d88F0B9c6829ec0C3518150Bf502D7AFB2, 30000);
+        _split(17, 0xe7fBBc14A5d77BABeFE2fDBe9336e39351bFC079, 20000);
+        _split(17, 0xa93B67B94216a37aAFB8b718e54d0e1F112d1Eb2, 20000);
+        _split(17, 0xEA7c11410cE75FC74476E9505D5B542F9E054F49, 30000);
+        _split(17, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 30000);
+        _split(17, 0x703c0fe45B7d78CA0E306cCcE262601442948324, 20000);
+        _split(17, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 20000);
+        _split(17, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 30000);
+        _split(17, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 460000);
+        _split(17, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 310000);
+        _product(17, 1200);
+
+        // 18 · VSERDE CHKELETA · 14 songs · from vserdeChkeleta 0xeE596AA79f53a7330d3D715F641a8e22836F0159
+        _split(18, 0x40dAab99A574F0A1F14DCcD573eEa7665ed03117, 30000);
+        _split(18, 0x0abb15c3968fd32bf2eeDcD0c7ca39EfF6AbE660, 20000);
+        _split(18, 0x3237bc84431277762780bDe78EdE48b387E2FE16, 20000);
+        _split(18, 0x3cCD5532019e6c73870Df92cb30c8533CF27f91C, 20000);
+        _split(18, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 60000);
+        _split(18, 0x26D310B977c9b8A81f59960A6c763C0f2105E4d3, 30000);
+        _split(18, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 85000);
+        _split(18, 0x53D2684Dd950d326f523F4f4F66C9dd2B2Dd0A8F, 15000);
+        _split(18, 0xa45F8B9Fd7871e14Ab56ed27979A79ac425E75e2, 15000);
+        _split(18, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 150000);
+        _split(18, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 395000);
+        _split(18, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 160000);
+        _product(18, 1400);
+
+        // 19 · MödkrovieW (2024) · 14 songs · from twentyFour 0xe1A3D23614b346f5b4871f533C034a3CE0B91A3c
+        _split(19, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 20000);
+        _split(19, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 90000);
+        _split(19, 0xEE10Ece6148B916b3e2CEF240aa242Dc63677F90, 30000);
+        _split(19, 0xe06DF71a6F9F47c7eA197d6A5bae77f0ebB3CF51, 30000);
+        _split(19, 0xad4740f4e8707F96aae3710CC730a35a199F6117, 30000);
+        _split(19, 0x7DBAae9f265b34a157D9568C1FC675C5FFE10566, 20000);
+        _split(19, 0x20aF5933Ba1f70Dd795fdd772eCBBb3716780E71, 20000);
+        _split(19, 0xABA64630d6205c857e2f5dbddDA41335bE0f56c9, 20000);
+        _split(19, 0x3882aB0a9342a77F2441177C378B9c46111FbA9D, 60000);
+        _split(19, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 520000);
+        _split(19, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 160000);
+        _product(19, 1400);
+
+        // 20 · Seni Snov Tvoih · 11 songs · from psykoRewards 0x23C672AB5c47676d27969448f8a3F452F68Fe953
+        _split(20, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(20, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(20, 1100);
+
+        // 21 · myvmestesnimi · 16 songs · from myvmestesnimi 0xb741018fA16b9070fdD9e9934B2AEcF6b70a714e
+        _split(21, 0xCd26cD29a320fF4F9a0B97a772F0fc634f8eb8ba, 30000);
+        _split(21, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 20000);
+        _split(21, 0xe7fBBc14A5d77BABeFE2fDBe9336e39351bFC079, 40000);
+        _split(21, 0x3FFE641cD1Ac213C8B9C8e2cdC0901AaE111C952, 20000);
+        _split(21, 0x46104666998B74B526FA269C65D70C30b614753F, 20000);
+        _split(21, 0x4d2de3b625272249574C38Fdcc3a2E63a4cc9250, 60000);
+        _split(21, 0xe602AeC42cB560f2B62E8C67Bc05146948d0C1f8, 90000);
+        _split(21, 0x87A3666179850D265BAE844Dc1b8098Ad5409E5B, 30000);
+        _split(21, 0x2Df2Ed98f418e5B241518D878733e2660272A6B4, 20000);
+        _split(21, 0x8b7218DbD1C009EbbD7cfDd2346007B1715fB99f, 20000);
+        _split(21, 0x2B374f15D25779fD6d3A84C78F6ab5b3a8522e7b, 20000);
+        _split(21, 0xe06DF71a6F9F47c7eA197d6A5bae77f0ebB3CF51, 20000);
+        _split(21, 0x4734932DBace888a3dF0D5f42E3933e0f7b8aB72, 20000);
+        _split(21, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 540000);
+        _split(21, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 50000);
+        _product(21, 1600);
+
+        // 22 · Luchenie · 17 songs · from Luchenie 0x8b56fc03b5f2d2871125dbee814af4872acb756b
+        _split(22, 0x82Bc087207c4AB731099BC886093591d629D0e80, 33333);
+        _split(22, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 33333);
+        _split(22, 0x976f8e6002E3c9a06E446b73C7783f795761c528, 33333);
+        _split(22, 0xEE10Ece6148B916b3e2CEF240aa242Dc63677F90, 33333);
+        _split(22, 0xC3cffd68ea51B61cd94dd67caCb57D0fb050fA91, 33333);
+        _split(22, 0x24B9927b8a1C63257878cFEfc8Aba4861d725d8A, 33333);
+        _split(22, 0x299c9d794dF021167492321400C13E394e4bD3eE, 33333);
+        _split(22, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 766669);
+        _product(22, 1700);
+
+        // 23 · Psykovsky & Marambá - Asereje · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(23, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(23, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(23, 100);
+
+        // 24 · Psykovsky & Marambá - Tender Nest · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(24, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(24, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(24, 100);
+
+        // 25 · Psykovsky & Marambá - Lonely Shepherd · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(25, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(25, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(25, 100);
+
+        // 26 · Psykovsky & Marambá - Forever · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(26, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 200000);
+        _split(26, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 200000);
+        _split(26, 0x69bfD294ef12e704AE2120aA717Fcf91753d8228, 200000);
+        _split(26, 0x51187F525779123d45066b8580C0D622Aa2B67c4, 200000);
+        _split(26, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 200000);
+        _product(26, 100);
+
+        // 27 · Psykovsky & Marambá - Stumbling All Around · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(27, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(27, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(27, 100);
+
+        // 28 · Psykovsky & Marambá - Solost Without You · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(28, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(28, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(28, 100);
+
+        // 29 · Psykovsky & Marambá - Pzydeco · 1 song · from PskvskMrmba 0x2Be6D926d9e93CE87bd2A6bF4E1B574770abe42f
+        _split(29, 0x1FD5831F6B5212677aad4E8cA560F5d246382b49, 500000);
+        _split(29, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(29, 100);
+
+        // 30 · 甜蜜蜜 (2024) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(30, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 500000);
+        _split(30, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(30, 100);
+
+        // 31 · 让我们荡起双桨 (2020) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(31, 0x20aF5933Ba1f70Dd795fdd772eCBBb3716780E71, 333333);
+        _split(31, 0x7DBAae9f265b34a157D9568C1FC675C5FFE10566, 333333);
+        _split(31, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 333334);
+        _product(31, 100);
+
+        // 32 · 辛加林加林 (2019) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(32, 0x53D2684Dd950d326f523F4f4F66C9dd2B2Dd0A8F, 250000);
+        _split(32, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 250000);
+        _split(32, 0xa45F8B9Fd7871e14Ab56ed27979A79ac425E75e2, 250000);
+        _split(32, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 250000);
+        _product(32, 100);
+
+        // 33 · 星際夢想 (第 1 集) (2024) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(33, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(33, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(33, 100);
+
+        // 34 · 星際夢想 (第 2 集) (2024) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(34, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(34, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(34, 100);
+
+        // 35 · 晴天 (2025) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(35, 0xC3cffd68ea51B61cd94dd67caCb57D0fb050fA91, 333333);
+        _split(35, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(35, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 166667);
+        _product(35, 100);
+
+        // 36 · 量子拥抱 (2025) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(36, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(36, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(36, 100);
+
+        // 37 · 執迷不悔 (2025) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(37, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 500000);
+        _split(37, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(37, 100);
+
+        // 38 · 外星人的情歌 第 1 集 (2025) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(38, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(38, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(38, 100);
+
+        // 39 · 外星人的情歌 第 2 集 (2025) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(39, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(39, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(39, 100);
+
+        // 40 · 我們的愛 (2026) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(40, 0xC3cffd68ea51B61cd94dd67caCb57D0fb050fA91, 250000);
+        _split(40, 0x4630F0ddA44e3C1aF4d6706b545BdFA73e9aAfEd, 500000);
+        _split(40, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 250000);
+        _product(40, 100);
+
+        // 41 · 我要去拜年! (2019) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(41, 0x5FbbC950219eeD55AB8d3E13c90c7D53eD48caEA, 500000);
+        _split(41, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(41, 100);
+
+        // 42 · 逝去之物的黎明 (2017) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(42, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 500000);
+        _split(42, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 500000);
+        _product(42, 100);
+
+        // 43 · 陨石和黑曜石 (2012) · 1 song · from CnlistUpdated 0x5EcBfF0d5F95e603F65D8FA4600Af56702E52Afd
+        _split(43, 0x2d3Fb8879c0c48E8Fa977FA1f88584583d94668F, 333333);
+        _split(43, 0x941503EfcAa28EFe071C84D72ff30cA018d23423, 333333);
+        _split(43, 0x2CE95071Bc3139f92F73D6a4d3b92a672F277BCB, 333334);
+        _product(43, 100);
+    }
+}

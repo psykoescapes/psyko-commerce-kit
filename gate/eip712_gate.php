@@ -5,7 +5,9 @@ if (!defined('GATE_CHAIN_ID'))  define('GATE_CHAIN_ID', 56);
 if (!defined('GATE_DOMAIN'))    define('GATE_DOMAIN', 'psykovsky.com Downloads');
 if (!defined('GATE_VERSION'))   define('GATE_VERSION', '1');
 if (!defined('GATE_TTL'))       define('GATE_TTL', 300);
-if (!defined('GATE_NONCE_DIR')) define('GATE_NONCE_DIR', __DIR__ . '/../gate_nonces');
+if (!defined('GATE_NONCE_DIR')) define('GATE_NONCE_DIR', dirname(__DIR__, 2) . '/psyko_private/gate_nonces');
+if (!defined('GATE_LINK_TTL'))  define('GATE_LINK_TTL', 300);
+if (!defined('GATE_LINK_MAX_USES')) define('GATE_LINK_MAX_USES', 3);
 
 function keccak256(string $data): string
 {
@@ -142,6 +144,7 @@ function gate_sweep(): void {
     $limit = time() - 2 * GATE_TTL;
     foreach (glob(GATE_NONCE_DIR . '/*.json') ?: [] as $f) if (@filemtime($f) < $limit) @unlink($f);
     foreach (glob(GATE_NONCE_DIR . '/rate_*') ?: [] as $f) if (@filemtime($f) < time() - 120) @unlink($f);
+    foreach (glob(GATE_NONCE_DIR . '/dl_*') ?: [] as $f) if (@filemtime($f) < time() - 2 * GATE_LINK_TTL) @unlink($f);
 }
 
 function gate_rate_ok(int $max = 20): bool {
@@ -154,7 +157,7 @@ function gate_rate_ok(int $max = 20): bool {
 
 function gate_new_challenge(string $wallet, int $licence, string $purpose): array {
     if (!gate_is_address($wallet)) throw new InvalidArgumentException('bad wallet');
-    if (!is_dir(GATE_NONCE_DIR)) mkdir(GATE_NONCE_DIR, 0700, true);
+    gate_private_dir(GATE_NONCE_DIR);
     gate_sweep();
     if (!gate_rate_ok()) throw new InvalidArgumentException('Too many attempts. Wait a minute and try again.');
     $nonce = bin2hex(random_bytes(16));
@@ -184,9 +187,59 @@ function gate_verify(string $nonce, string $signature, string $licenceContract):
     return ['ok'=>true, 'wallet'=>$m['wallet'], 'licence'=>(int)$m['licence']];
 }
 
+function gate_private_dir(string $dir): void {
+    if (!is_dir($dir)) mkdir($dir, 0700, true);
+    if (!is_file($dir . '/.htaccess')) @file_put_contents($dir . '/.htaccess', "Require all denied\nOptions -Indexes\n");
+}
+
+/// A download link is signed, tied to one wallet and one product, valid for GATE_LINK_TTL seconds,
+/// and can be opened at most GATE_LINK_MAX_USES times (so an interrupted download can resume, but
+/// a shared link stops working almost at once).
 function gate_download_link(int $licence, string $who): array {
     $exp = time() + GATE_LINK_TTL;
-    $payload = $licence . '.' . str_replace('.', '', $who) . '.' . $exp;
+    $jti = bin2hex(random_bytes(12));
+    $payload = $licence . '.' . str_replace('.', '', $who) . '.' . $exp . '.' . $jti;
     $sig = hash_hmac('sha256', $payload, GATE_SECRET);
     return ['url' => 'download712.php?t=' . rawurlencode(base64_encode($payload . '.' . $sig)), 'expires' => $exp];
+}
+
+function gate_take_download(string $token): array {
+    $t = base64_decode($token, true);
+    $p = $t === false ? [] : explode('.', $t);
+    if (count($p) !== 5) return ['ok' => false, 'code' => 400, 'error' => 'Bad link.'];
+    [$licence, $who, $exp, $jti, $sig] = $p;
+    if (!preg_match('/^[0-9a-f]{24}$/', $jti) || !preg_match('/^\d+$/', $licence . $exp)) return ['ok' => false, 'code' => 400, 'error' => 'Bad link.'];
+    if (!hash_equals(hash_hmac('sha256', "$licence.$who.$exp.$jti", GATE_SECRET), $sig)) return ['ok' => false, 'code' => 403, 'error' => 'Bad link.'];
+    if (time() > (int)$exp) return ['ok' => false, 'code' => 410, 'error' => 'This link expired. Please sign in again on the album page.'];
+    gate_private_dir(GATE_NONCE_DIR);
+    $f = fopen(GATE_NONCE_DIR . "/dl_$jti", 'c+');
+    flock($f, LOCK_EX);
+    $n = (int)stream_get_contents($f) + 1;
+    ftruncate($f, 0); rewind($f); fwrite($f, (string)$n); fflush($f);
+    flock($f, LOCK_UN); fclose($f);
+    if ($n > GATE_LINK_MAX_USES) return ['ok' => false, 'code' => 410, 'error' => 'This link was already used. Please sign in again on the album page.'];
+    return ['ok' => true, 'licence' => (int)$licence, 'who' => $who];
+}
+
+/// Presigned GET link for a private S3-compatible bucket (Cloudflare R2, IBM COS, Backblaze B2, AWS S3...).
+/// AWS Signature V4, query-string form. The link stops working after $ttl seconds.
+function gate_s3_uri(string $s): string { return str_replace('%7E', '~', rawurlencode($s)); }
+function gate_s3_presign(array $c, string $key, int $ttl, ?string $filename = null, ?int $now = null): string {
+    $now = $now ?? time();
+    $amzDate = gmdate('Ymd\THis\Z', $now); $day = gmdate('Ymd', $now);
+    $region = $c['region'] ?? 'auto';
+    $ep = parse_url($c['endpoint']);
+    $virtual = !empty($c['virtual_host']);
+    $host = $virtual ? $c['bucket'] . '.' . $ep['host'] : $ep['host'];
+    $path = ($virtual ? '' : '/' . gate_s3_uri($c['bucket'])) . '/' . implode('/', array_map('gate_s3_uri', explode('/', $key)));
+    $scope = "$day/$region/s3/aws4_request";
+    $q = ['X-Amz-Algorithm' => 'AWS4-HMAC-SHA256', 'X-Amz-Credential' => $c['access_key'] . '/' . $scope,
+          'X-Amz-Date' => $amzDate, 'X-Amz-Expires' => (string)$ttl, 'X-Amz-SignedHeaders' => 'host'];
+    if ($filename !== null) $q['response-content-disposition'] = 'attachment; filename="' . str_replace('"', '', $filename) . '"; filename*=UTF-8\'\'' . rawurlencode($filename);
+    ksort($q, SORT_STRING);
+    $qs = implode('&', array_map(fn($k, $v) => gate_s3_uri($k) . '=' . gate_s3_uri($v), array_keys($q), $q));
+    $canon = "GET\n$path\n$qs\nhost:$host\n\nhost\nUNSIGNED-PAYLOAD";
+    $sts = "AWS4-HMAC-SHA256\n$amzDate\n$scope\n" . hash('sha256', $canon);
+    $k = hash_hmac('sha256', 'aws4_request', hash_hmac('sha256', 's3', hash_hmac('sha256', $region, hash_hmac('sha256', $day, 'AWS4' . $c['secret_key'], true), true), true), true);
+    return ($ep['scheme'] ?? 'https') . "://$host$path?$qs&X-Amz-Signature=" . hash_hmac('sha256', $sts, $k);
 }

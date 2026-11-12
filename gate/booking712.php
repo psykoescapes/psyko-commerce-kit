@@ -2,8 +2,8 @@
 header('Content-Type: application/json'); header('Cache-Control: no-store');
 require_once __DIR__ . '/gate_config.php';
 require_once __DIR__ . '/eip712_gate.php';
-if (!defined('BOOKING_EMAIL')) define('BOOKING_EMAIL', '');
-if (!defined('BOOKING_FROM'))  define('BOOKING_FROM',  '');
+if (!defined('BOOKING_EMAIL')) define('BOOKING_EMAIL', 'you@example.com');
+if (!defined('BOOKING_FROM'))  define('BOOKING_FROM',  'bookings@example.com');
 if (!defined('STORE_ADDRESS')) define('STORE_ADDRESS', '0x64f2cddd7fd2d8e2ffe8dfe99b30a95678d63c10');
 if (!defined('STORE_PURCHASE_TOPIC')) define('STORE_PURCHASE_TOPIC', '0x25a570ce761a2543679d9f736465aec7816f43f2abd6e35d61dbd3dd9186d957');
 const BOOKING_PRODUCTS = ['stream-booking' => 2, 'kmxi-ticket' => 11];
